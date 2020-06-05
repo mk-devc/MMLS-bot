@@ -118,8 +118,39 @@ class MMLSBot():
 		advisor_link.click()
 
 
-	def Timetable(self):
-		session_requests = requests.session()
+	def timetable(self):
+
+		#headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:76.0) Gecko/20100101 Firefox/76.0'}
+		with requests.Session() as s:
+
+				login_data = {
+					'timezoneOffset': -480,
+			    	'userid': ld.username,
+			    	'pwd': ld.password
+				}
+
+				headers = {
+					'User-Agent' : 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:76.0) Gecko/20100101 Firefox/76.0'
+				}
+
+
+
+				url = 'https://cms.mmu.edu.my/?cmd=login&languageCd=ENG'
+
+				urlTimetable = 'https://cms.mmu.edu.my/psp/csprd/EMPLOYEE/HRMS/c/SA_LEARNER_SERVICES.SSR_SSENRL_LIST.GBL?PORTALPARAM_PTCNAV=HC_SSR_SSENRL_LIST&EOPP.SCNode=HRMS&EOPP.SCPortal=EMPLOYEE&EOPP.SCName=CO_EMPLOYEE_SELF_SERVICE&EOPP.SCLabel=Course%20Enrollment&EOPP.SCFName=N_NEW_CRSENRL&EOPP.SCSecondary=true&EOPP.SCPTfname=N_NEW_CRSENRL&FolderPath=PORTAL_ROOT_OBJECT.CO_EMPLOYEE_SELF_SERVICE.N_NEW_ACADEMICS.N_NEW_CRSENRL.N_NEW_CLASSSCH.HC_SSR_SSENRL_LIST&IsFolder=false'
+
+				post  = s.post(url, data=login_data , headers = headers )
+				print(post.text)
+
+				timetable = s.get(urlTimetable , headers = headers)
+				print(timetable.text)
+
+
+
+
+
+			
+
 
 
 	def backpage(self):
@@ -132,16 +163,44 @@ class MMLSBot():
 
 def input():
 	parser = argparse.ArgumentParser()
-	parser.add_argument("start" , help = 'Execute Browser' , action="store_true")
+	parser.add_argument("-start" , help = 'Execute Browser' , action="store_true")
 	parser.add_argument("-rs" , help = 'Register Subject.' , action="store_true")
 	parser.add_argument("-f" , help = 'Check finance.' ,action="store_true") 
 	parser.add_argument("-ad" , help = 'Check advisor.',action="store_true") 
 	parser.add_argument("-at" , help = 'Check attendance.',action="store_true")
+	
 	args = parser.parse_args()
-	if args.rs:
-		print("Registering subject")
+		
 	arguments = vars(args)
 	return arguments
+
+def main():
+	value = input()
+		
+
+	if value['start'] & value['rs']:
+		print('Launch bot')
+		print("Registering subject.")
+		bot = MMLSBot()
+		bot.registerSubject()
+	elif value['start'] & value['f']:
+		print('Launch bot')
+		print("Checking finance.")
+		bot = MMLSBot()
+		bot.finance()
+	elif value['start'] & value['ad']:
+		print('Launch bot')
+		print("Checking your advisor.")
+		bot = MMLSBot()
+		bot.checkAdvisor()
+	elif value['start'] & value['at']:
+		print('Launch bot')
+		print("Checking your attendance.")
+		bot = MMLSBot()
+		bot.attendance()
+	else:
+		print('No arguement pass.')
+		print('pass -h in the CLI for more info.')
 
  
 
@@ -150,24 +209,10 @@ def input():
 
 if __name__ == "__main__":
 
-	value = input()
-	print(value)
-	if value['start']:
-		print('Launch bot')
-		bot = MMLSBot()
+	main()
 
-	if value['rs']:
-		bot.registerSubject()
-	elif value['f']:
-		bot.finance()
-	elif value['ad']:
-		bot.checkAdvisor()
-	elif value['at']:
-		bot.attendance()
+	
 
-	'''
-	    while(true):
-	'''
 
 
 
